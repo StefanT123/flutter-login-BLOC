@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'validators.dart';
+import 'package:rxdart/rxdart.dart';
 
 class Bloc extends Object with Validators {
-    final _emailController = StreamController<String>();
-    final _passwordController = StreamController<String>();
+    final _emailController = BehaviorSubject<String>();
+    final _passwordController = BehaviorSubject<String>();
 
     /**
      * Add data to stream.
@@ -16,6 +17,15 @@ class Bloc extends Object with Validators {
      */
     Stream<String> get email => _emailController.stream.transform(validateEmail);
     Stream<String> get password => _passwordController.stream.transform(validatePassword);
+    Stream<bool> get submitValid => Observable.combineLatest2(email, password, (email, password) => true);
+
+    submit() {
+        final validEmail = this._emailController.value;
+        final validPassword = this._passwordController.value;
+
+        print('Email is ${validEmail}');
+        print('Password is ${validPassword}');
+    }
 
     /**
      * Close the stream.
